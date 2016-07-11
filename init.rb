@@ -21,10 +21,14 @@ if Rails::VERSION::MAJOR >= 3
   ActionDispatch::Callbacks.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
+    require_dependency 'attachment'
+    Attachment.send(:include, RedmineLightbox2::AttachmentModelPatch)
   end
 else
   Dispatcher.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
+    require_dependency 'attachment'
+    Attachment.send(:include, RedmineLightbox2::AttachmentModelPatch)
   end
 end
