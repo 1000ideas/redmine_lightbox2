@@ -20,7 +20,7 @@ module RedmineLightbox2
             return
           end
 
-          ext = params[:filename].split('.').last
+         ext = params[:filename].split('.').last
 
           if image? ext
             temp = StringIO.new(request.raw_post)
@@ -67,7 +67,7 @@ module RedmineLightbox2
         end
         Paperclip.interpolates :disk_filename do |attachment, style|
           name = attachment.instance.disk_filename.split('.').first
-          style.to_s.downcase == 'thumb' ? "#{style.to_s.capitalize}_#{name}" : "#{name}"
+          style.to_s.downcase == 'original' ? "#{name}" : "#{style.to_s.downcase}_#{name}"
         end
         has_attached_file :file, styles: { thumb: '200x100' },
                           url: "/files/:year/:month/:disk_filename.:extension",
@@ -79,19 +79,14 @@ module RedmineLightbox2
         end
 
         def files_to_final_location
-          self.disk_directory = target_directory
-          self.disk_filename = Attachment.disk_filename(filename, disk_directory)
           if @temp_file && (@temp_file.size > 0)
-            md5 = Digest::MD5.new
-            if @temp_file.respond_to?(:read)
-              buffer = ""
-              while (buffer = @temp_file.read(8192))
-                md5.update(buffer)
-              end
+            self.disk_directory = target_directory
+            self.disk_filename = Attachment.disk_filename(filename, disk_directory)
+            if self.filename.split('.').last =~ /(bmp|gif|jpg|jpe|jpeg|png)/i
+              self.digest = md5_image_file
             else
-              md5.update(@temp_file)
+              self.digest = md5_non_image_file
             end
-            self.digest = md5.hexdigest
           end
 
           if content_type.blank? && filename.present?
@@ -101,6 +96,42 @@ module RedmineLightbox2
           if self.content_type && self.content_type.length > 255
             self.content_type = nil
           end
+        end
+
+        private
+
+        def md5_image_file
+          md5 = Digest::MD5.new
+          if @temp_file.respond_to?(:read)
+            buffer = ""
+            while (buffer = @temp_file.read(8192))
+              md5.update(buffer)
+            end
+          else
+            md5.update(@temp_file)
+          end
+          md5.hexdigest
+        end
+
+        def md5_non_image_file
+          path = File.dirname(diskfile)
+          unless File.directory?(path)
+            FileUtils.mkdir_p(path)
+          end
+          md5 = Digest::MD5.new
+          File.open(diskfile, "wb") do |f|
+            if @temp_file.respond_to?(:read)
+              buffer = ""
+              while (buffer = @temp_file.read(8192))
+                f.write(buffer)
+                md5.update(buffer)
+              end
+            else
+              f.write(@temp_file)
+              md5.update(@temp_file)
+            end
+          end
+          md5.hexdigest
         end
       end
     end
