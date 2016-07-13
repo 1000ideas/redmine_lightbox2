@@ -10,6 +10,7 @@ Redmine::Plugin.register :redmine_lightbox2 do
   version '0.1.6'
   url 'https://github.com/paginagmbh/redmine_lightbox2'
   requires_redmine :version => '2.6'
+  RedmineApp::Application.config.middleware.use Rack::Static, urls: ['/files'], root: Rails.root.to_s
 end
 
 
