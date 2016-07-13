@@ -66,11 +66,11 @@ module RedmineLightbox2
           month.to_s.size == 1 ? "0#{month}" : "#{month}"
         end
         Paperclip.interpolates :disk_filename do |attachment, style|
-          name = attachment.instance.disk_filename.split('.').first
+          name = attachment.instance.disk_filename
           style.to_s.downcase == 'original' ? "#{name}" : "#{style.to_s.downcase}_#{name}"
         end
         has_attached_file :file, styles: { thumb: '200x100' },
-                          url: "/files/:year/:month/:disk_filename.:extension",
+                          url: "/files/:year/:month/:disk_filename",
                           path: ":rails_root:url"
 
         def raw_file=(incoming_file)
