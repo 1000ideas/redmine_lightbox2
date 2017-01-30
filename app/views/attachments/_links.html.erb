@@ -23,6 +23,10 @@
                 }, :class => $1.downcase + ' lightbox_preview', :rel => 'attachments',
                 :title => "#{attachment.filename}#{ ('-' + attachment.description) unless attachment.description.blank? }" %>
   <% end -%>
+  <%= link_to image_tag('download.png', :plugin => :redmine_lightbox2), {
+                :controller => 'attachments', :action => 'download_att',
+                :id => attachment, :filename => attachment.filename
+              }, :class => 'small' %>
   <% if options[:deletable] %>
     <%= link_to image_tag('delete.png'), attachment_path(attachment),
                                          :data => {:confirm => l(:text_are_you_sure)},
