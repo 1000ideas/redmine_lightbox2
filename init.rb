@@ -10,6 +10,7 @@ Redmine::Plugin.register :redmine_lightbox2 do
   version '0.1.6'
   url 'https://github.com/paginagmbh/redmine_lightbox2'
   requires_redmine :version => '2.6'
+  RedmineApp::Application.config.middleware.use Rack::Static, urls: ['/files'], root: Rails.root.to_s
 end
 
 # Patches to the Redmine core.
@@ -19,10 +20,14 @@ if Rails::VERSION::MAJOR >= 3
   ActionDispatch::Callbacks.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
+    require_dependency 'attachment'
+    Attachment.send(:include, RedmineLightbox2::AttachmentModelPatch)
   end
 else
   Dispatcher.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
+    require_dependency 'attachment'
+    Attachment.send(:include, RedmineLightbox2::AttachmentModelPatch)
   end
 end
