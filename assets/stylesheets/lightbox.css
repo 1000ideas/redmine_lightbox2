@@ -17,6 +17,9 @@ a.lightbox_preview img  {
   margin: 0 4px;
   width: 18px;
 }
+div.download-all {
+  font-size: 1.1em;
+}
 
 .fancybox-custom .fancybox-skin {
 	box-shadow: 0 0 50px #222;

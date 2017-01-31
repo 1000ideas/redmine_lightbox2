@@ -29,7 +29,7 @@
               }, :class => 'small' %>
   <% if options[:deletable] %>
     <%= link_to image_tag('delete.png'), attachment_path(attachment),
-                                         :data => {:confirm => l(:text_are_you_sure)},
+                                         :data => { :confirm => l(:text_are_you_sure), :remote => true },
                                          :method => :delete,
                                          :class => 'delete',
                                          :title => l(:button_delete) %>
@@ -38,6 +38,12 @@
     <span class="author"><%= h(attachment.author) %>, <%= format_time(attachment.created_on) %></span>
   <% end %>
   </p>
+<% end %>
+
+<% if attachments.any? %>
+  <div class="download-all">
+    <%= link_to 'Pobierz wszystkie załączniki', { controller: 'attachments', action: 'download_zip', id: attachments.first.id } %>
+  </div>
 <% end %>
 
 <% if defined?(thumbnails) && thumbnails %>

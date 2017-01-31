@@ -18,6 +18,23 @@ module RedmineLightbox2
                     :type => detect_content_type(@attachment),
                     :disposition => 'attachment'
         end
+
+        def download_zip
+          attachments = @attachment.container.attachments
+
+          filename = "#{@attachment.container.id}_zalaczniki.zip"
+          temp_file = Tempfile.new(filename)
+
+          Zip::OutputStream.open(temp_file.path) do |zip|
+            attachments.each do |att|
+              zip.put_next_entry(att.filename)
+              zip.print(IO.read(att.diskfile))
+            end
+          end
+
+          send_file(temp_file.path, type: 'application/zip', filename: filename, disposition: 'attachment')
+          temp_file.close
+        end
       end
     end
   end

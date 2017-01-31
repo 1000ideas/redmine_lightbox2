@@ -1,7 +1,6 @@
 require 'redmine'
 
 require_dependency 'patches/attachments_patch'
-require_dependency 'patches/issues_patch'
 require_dependency 'hooks/view_layouts_base_html_head_hook'
 
 Redmine::Plugin.register :redmine_lightbox2 do
@@ -20,14 +19,10 @@ if Rails::VERSION::MAJOR >= 3
   ActionDispatch::Callbacks.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
-    # require_dependency 'issues_controller'
-    # IssuesController.send(:include, RedmineLightbox2::IssuesPatch)
   end
 else
   Dispatcher.to_prepare do
     require_dependency 'attachments_controller'
     AttachmentsController.send(:include, RedmineLightbox2::AttachmentsPatch)
-    # require_dependency 'issues_controller'
-    # IssuesController.send(:include, RedmineLightbox2::IssuesPatch)
   end
 end
